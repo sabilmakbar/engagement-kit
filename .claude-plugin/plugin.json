@@ -1,0 +1,8 @@
+{
+  "name": "dev-pipeline",
+  "version": "0.1.0",
+  "description": "Mode-aware development pipeline: FDE-flavored PM interview skill and a fresh-context tech-lead reviewer, with spec/story/decision-spine templates. Four engagement modes: greenfield, feature, refactor, derivative.",
+  "author": {
+    "name": "sabilmakbar"
+  }
+}
