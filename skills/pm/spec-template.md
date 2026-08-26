@@ -62,6 +62,19 @@ Quality attribute being bought: [one]. Behavioral invariants that must hold: [li
 **Gate: characterization tests for every invariant exist and pass before any story
 crosses its spec checkpoint.**
 
+### Maintenance: reproduction & release
+Reproduction: [exact steps + evidence — or CANNOT-REPRODUCE and what is missing].
+Affected: [versions, machines, sibling artifacts].
+Invariant: full regression suite green before and after; only the named behavior
+delta changes.
+**Gate: a named regression test exists that FAILS on the unfixed code and passes
+after the fix.**
+
+| Sibling | Same defect? | Action |
+|---|---|---|
+
+Release plan: [patch / minor], executed via the release checklist at close.
+
 ### Derivative: delta table
 | Item | Disposition | Reason |
 |---|---|---|

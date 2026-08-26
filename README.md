@@ -1,7 +1,7 @@
-# dev-pipeline-kit
+# engagement-kit
 
-A thin, mode-aware development pipeline for Claude Code: specialized roles built as
-skills + subagents, with document handoffs between them.
+A thin, mode-aware engagement process for Claude Code: specialized roles built as
+skills + subagents, with document handoffs and two-key gates between them.
 
 **Pipeline:** FDE-flavored PM (interactive, main session) → Tech Lead review
 (fresh-context agent) → per-story build loop with two human checkpoints (spec, done)
@@ -14,7 +14,7 @@ themselves a failure mode. The PM and Tech Lead survive because they are artifac
 (the interview; the information-asymmetric reviewer), not org chart. Revisit only
 with new evidence.
 
-## The four modes
+## The five modes
 
 Every engagement is classified first; the mode decides which checklists apply and
 which artifacts the engagement actually earns.
@@ -25,13 +25,15 @@ which artifacts the engagement actually earns.
 | `feature` | The repo | Regression surface must be mapped; the pipeline's sweet spot |
 | `refactor` | The repo + invariants | PM pins what quality attribute is being bought; characterization tests must pass before any story's spec checkpoint |
 | `derivative` | A reference project (sibling repo) | Spec is a delta (same/changed/dropped/new); copy-vs-extract is a named user decision; carried-over assumptions get audited |
+| `maintenance` | The shipped artifact + the field report | Reproduce first; everything-but-the-bug frozen; sibling parity checked; ends with the release checklist (tag=release=manifest=payload, dogfood install) |
 
 ## Layout
 
 ```
-.claude-plugin/        # plugin + marketplace manifests
+.claude-plugin/        # plugin + marketplace manifests (incl. nudge hook wiring)
 skills/pm/             # /pm — interview + spec authoring (SKILL.md + templates)
 agents/tech-lead.md    # fresh-context spec reviewer, read-only tools
+hooks/                 # session-start engagement nudge (UserPromptSubmit)
 tests/                 # structure tests: python3 -m unittest discover tests
 ```
 
@@ -40,16 +42,18 @@ tests/                 # structure tests: python3 -m unittest discover tests
 As a Claude Code plugin:
 
 ```
-/plugin marketplace add sabilmakbar/dev-pipeline-kit
-/plugin install dev-pipeline@dev-pipeline
+/plugin marketplace add sabilmakbar/engagement-kit
+/plugin install engagement-kit@engagement-kit
 ```
 
 From a local clone, use the clone path instead:
-`/plugin marketplace add /path/to/dev-pipeline-kit`, then the same install command.
+`/plugin marketplace add /path/to/engagement-kit`, then the same install command.
 
-The skill arrives namespaced (`dev-pipeline:pm`) and works in every project — no
+The skill arrives namespaced (`engagement-kit:pm`) and works in every project — no
 per-project copying. In the target project, run `/pm` and add `dev/` to that
-project's `.gitignore` (the skill reminds you).
+project's `.gitignore` (the skill reminds you). The nudge hook fires on a session's
+first message (or after a 4h gap; tune with `ENGAGEMENT_KIT_NUDGE_GAP` seconds) and
+suggests classifying new work through `/pm`; it stays quiet otherwise.
 
 ## Artifact policy
 

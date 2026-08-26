@@ -1,14 +1,14 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "dev-pipeline",
-  "description": "Mode-aware development pipeline for Claude Code: PM interview + tech-lead review with document handoffs.",
+  "name": "engagement-kit",
+  "description": "Mode-aware engagement process for Claude Code: PM interview + tech-lead review with document handoffs and two-key gates.",
   "owner": {
     "name": "sabilmakbar"
   },
   "plugins": [
     {
-      "name": "dev-pipeline",
-      "description": "FDE-flavored PM interview skill and fresh-context tech-lead reviewer; four engagement modes (greenfield, feature, refactor, derivative).",
+      "name": "engagement-kit",
+      "description": "FDE-flavored PM interview skill and fresh-context tech-lead reviewer; five engagement modes (greenfield, feature, refactor, derivative, maintenance); session-start engagement nudge hook.",
       "source": "./",
       "category": "productivity"
     }

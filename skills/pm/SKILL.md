@@ -17,11 +17,16 @@ than the user thinks. Every pushback comes with the why and an alternative.
 
 ## Step 0 — Classify the mode
 
-Decide which engagement type this is: `greenfield`, `feature`, `refactor`, or
-`derivative` (continuation/mirror of an existing project for a new use case).
+Decide which engagement type this is: `greenfield`, `feature`, `refactor`,
+`derivative` (continuation/mirror of an existing project for a new use case), or
+`maintenance` (a shipped artifact misbehaves, or needs a fix released).
 If it isn't obvious from the request, ask — with the four options and one line each on
 what the classification changes. The question must be self-contained: embed all
 context needed to answer it; never assume the user re-reads chat history above it.
+
+A meta-invocation ("review what X does", "re-probe the goals of this tooling") fits no
+mode yet. Say so, interview first, and classify the moment real scope emerges —
+classify-after-reprobe is allowed; silently never classifying is not.
 
 ## Step 1 — Ground before you ask
 
@@ -35,6 +40,14 @@ to an Explore subagent (conclusions only, not file dumps into your context):
 - `greenfield`: no repo, so ground in the domain — the workflow being replaced,
   external systems to integrate, data that already exists, comparable products the
   user can point to.
+- `maintenance`: the shipped artifact — REPRODUCE the failure first, empirics over
+  the report (a bug you cannot reproduce is a `[NEEDS CLARIFICATION]`, not a task);
+  the released version vs repo HEAD (any drift is ground truth); the reporter's
+  exact environment.
+- every mode: the user's stored preferences and memories that touch this decision
+  space, plus any existing `docs/decision-spine.md`. A recommendation that
+  contradicts a recorded preference or a live AD must name the conflict and argue
+  why — or not be made.
 
 ## Step 2 — Interview
 
@@ -56,6 +69,10 @@ user-facing question, every option description, and the sign-off summary:
   zones").
 - When offering options, state each option's consequence in one plain sentence.
 
+**Question discipline.** One decision per dialog. Batch questions only when they are
+mutually independent — an answer to one must never change another question's meaning.
+The sign-off ask is never batched with anything (see Step 4).
+
 Mode-specific must-pins:
 
 - **greenfield**: success criteria in the user's domain terms; the walking-skeleton
@@ -73,8 +90,24 @@ Mode-specific must-pins:
   with per-use-case extension layers. Give your recommendation and reasoning (how
   will the variants diverge over time?), but the user decides — never settle this
   silently. List carried-over assumptions for the tech lead to audit.
+- **maintenance**: confirmed reproduction (or explicit cannot-reproduce status);
+  blast radius — affected versions, machines, and SIBLINGS (for kit families, run
+  derivative's delta check: does the same defect live in the sibling kit?); the
+  everything-but-the-bug invariant — full regression suite green before and after,
+  only the named behavior delta; fix-vs-workaround as a named decision when both
+  exist; version-bump class. The engagement ends with a release: fill
+  `release-checklist-template.md` (this folder) at close.
+
+**Direction gate (plan-mode shape).** Everything up to here is read-only. Close the
+interview by presenting a short plan in chat: the approach, the alternatives you
+rejected and why, and what it touches. Get explicit approval on the direction — a
+standalone ask, question discipline applies. A wrong direction costs one message
+here and a full re-ground cycle later. Record the approved direction as the
+engagement's first AD in the decision spine. Write no artifact before this gate.
 
 ## Step 3 — Write the artifacts
+
+Only after the direction gate.
 
 - Spec: fill `spec-template.md` (this folder) → `docs/specs/<engagement-name>.md`.
   Durable, belongs in git.
@@ -89,7 +122,8 @@ Mode-specific must-pins:
 
 ## Step 4 — Review loop
 
-Hand the spec to the `tech-lead` agent (pass the spec path and the mode). Triage every
+Hand the spec to the `tech-lead` agent (installed as a plugin it appears as
+`engagement-kit:tech-lead`; pass the spec path and the mode). Triage every
 finding into exactly one class, each with its own action — never a vague "incorporate
 feedback":
 
@@ -102,12 +136,38 @@ feedback":
   with the reason. At sign-off, every open deferred item gets promoted to a durable
   home (a GitHub issue, or a spec change-log entry) or explicitly dropped — a
   deferred item left in an untracked file nobody reads is the unowned-findings
-  failure, not a resolution.
+  failure, not a resolution. Escalation trigger: the moment a deferred finding
+  causes real friction even once (blocks work, bites a user, repeats), promote it
+  immediately — do not wait for sign-off.
 - `reject` — the reviewer is wrong. Record the rebuttal with evidence; if the same
   finding survives the next review, stop arguing and escalate it to the user.
 
+Run review rounds in the background and narrate progress — never leave the user idle
+behind a blocking review.
+
 The loop is bounded: at most 3 review rounds. If the verdict is not READY by then,
-take the open findings to the user rather than iterating further. Then present the
-final spec for sign-off, leading with: the mode, the scope in one paragraph, the open
-decisions, and what is explicitly out of scope. After sign-off, scope-bearing sections
-freeze — see the spec template's change-log rules.
+take the open findings to the user rather than iterating further. Any scope-bearing
+amendment AFTER a READY verdict re-opens review: re-trigger the tech lead if a round
+remains, otherwise present the change as explicitly unreviewed in the sign-off ask.
+
+**Two-key sign-off.** The spec freezes only when both keys turn, in this order:
+
+1. **Machine key — your own gate, checked before you may ask the user:** tech-lead
+   verdict is READY and still current (no scope-bearing edits since it); zero open
+   `[NEEDS CLARIFICATION]` markers; every deferred item promoted or dropped; `dev/`
+   gitignored; decision spine up to date; every claim of current state in your
+   summary re-measured live just now, never repeated from memory; and if the
+   engagement touches CI or releases, CI status fetched and green — local runs
+   never count as green. Any item red: fix it first, never ask.
+2. **Human key — a STANDALONE ask, never batched with open decisions:** present the
+   mode, the scope in one paragraph, the decisions already settled, what is
+   explicitly out of scope, and the machine-key checklist shown green. The user
+   confirms scope and intent — the one thing you structurally cannot know. If their
+   answer adjusts scope instead of confirming, that is not a sign-off: incorporate,
+   re-run the machine key, ask again.
+
+After sign-off, scope-bearing sections freeze — see the spec template's change-log
+rules — and prompt the user to commit the spec and decision spine (durable artifacts;
+committing is their call, per their git conventions). If sign-off stalls or the
+session ends unsigned, say plainly in your final message which durable artifacts sit
+uncommitted.

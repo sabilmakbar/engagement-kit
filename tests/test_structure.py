@@ -1,4 +1,4 @@
-"""Structure tests for the dev-pipeline plugin. Run: python3 -m unittest discover tests"""
+"""Structure tests for the engagement-kit plugin. Run: python3 -m unittest discover tests"""
 import json
 import re
 import unittest
@@ -18,16 +18,48 @@ class TestManifests(unittest.TestCase):
         data = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
         for field in ("name", "version", "description"):
             self.assertIn(field, data)
-        self.assertEqual(data["name"], "dev-pipeline")
+        self.assertEqual(data["name"], "engagement-kit")
         self.assertRegex(data["version"], r"^\d+\.\d+\.\d+$")
 
     def test_marketplace_json(self):
         data = json.loads((ROOT / ".claude-plugin/marketplace.json").read_text())
-        self.assertEqual(data["name"], "dev-pipeline")
+        self.assertEqual(data["name"], "engagement-kit")
         self.assertEqual(len(data["plugins"]), 1)
         entry = data["plugins"][0]
-        self.assertEqual(entry["name"], "dev-pipeline")
+        self.assertEqual(entry["name"], "engagement-kit")
         self.assertEqual(entry["source"], "./")
+
+
+class TestHook(unittest.TestCase):
+    def test_manifest_wires_existing_script(self):
+        data = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
+        entries = data["hooks"]["UserPromptSubmit"][0]["hooks"]
+        self.assertEqual(len(entries), 1)
+        cmd = entries[0]["command"]
+        self.assertIn("${CLAUDE_PLUGIN_ROOT}", cmd)
+        m = re.search(r"hooks/([\w-]+\.sh)", cmd)
+        self.assertTrue(m, f"no script path in command: {cmd}")
+        self.assertTrue((ROOT / "hooks" / m.group(1)).exists())
+
+    def test_script_syntax(self):
+        import subprocess
+        for script in ROOT.glob("hooks/*.sh"):
+            r = subprocess.run(["bash", "-n", str(script)], capture_output=True)
+            self.assertEqual(r.returncode, 0, r.stderr.decode())
+
+    def test_script_portability(self):
+        # Portability bugs hit 5/5 mined sessions: no node/jq/python deps,
+        # no GNU-only flags; the hook must run on stock macOS bash 3.2.
+        for script in ROOT.glob("hooks/*.sh"):
+            body = script.read_text()
+            for banned in ("jq ", "node ", "python", "sed -i", "head -n -", "readarray", "mapfile"):
+                self.assertNotIn(banned, body, f"{script}: uses non-portable '{banned}'")
+
+    def test_script_never_blocks(self):
+        # A nudge hook must not be able to fail the prompt: every exit is 0.
+        for script in ROOT.glob("hooks/*.sh"):
+            body = script.read_text()
+            self.assertNotRegex(body, r"exit [1-9]", str(script))
 
 
 class TestSkills(unittest.TestCase):

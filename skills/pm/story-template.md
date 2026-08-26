@@ -7,10 +7,12 @@ another section's content. -->
 ## 1. Status
 `draft | ready | in-progress | in-verification | done`
 
-Two human gates per story — work does not cross an unchecked gate:
-- [ ] **spec checkpoint** — user approved this story's scope and ACs before execution
-      (refactor mode: characterization tests exist and pass BEFORE this gate)
-- [ ] **done checkpoint** — user accepted the result after verification
+Two gates per story, each needing two keys — work does not cross an unchecked gate:
+- [ ] **spec checkpoint** — machine key: tech-lead verdict READY and current, ACs
+      unambiguous (refactor mode: characterization tests exist and pass). Human key:
+      user approved this story's scope and ACs, in a standalone ask.
+- [ ] **done checkpoint** — machine key: section 6 verdict `pass` from a fresh
+      context. Human key: user accepted the result.
 
 ## 2. Story
 As a [role], I want [capability], so that [outcome].
@@ -43,7 +45,11 @@ If the section can't fit the budget, the story is too big — split it. Include:
 - Decisions made & why: [...]
 
 ## 6. Verification results
-<!-- Fresh context only (spec + diff, never the executor's chat). Verdict + evidence. -->
+<!-- Fresh context only (spec + diff, never the executor's chat). Verdict + evidence.
+Check TWO things, not one: (a) acceptance criteria met; (b) the work obeys the
+engagement's standing rules — naming, provenance, conventions recorded in the spec,
+spine, or Dev Notes constraints. Delegated work that passes ACs while breaking a
+session rule is a FAIL. -->
 - Verdict: `pass | fail`
 - Evidence: [test run output summary, what was checked beyond the ACs]
 - Findings: [...]

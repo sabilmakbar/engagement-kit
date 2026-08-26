@@ -66,6 +66,11 @@ The dimensions:
   reason it existed still holds in the new use case — inherited assumptions and
   copied workarounds are this mode's signature defect. Is copy-vs-extract recorded
   as a user decision with rationale, not silently assumed?
+- **maintenance**: rerun the reproduction — a fix for an unreproduced bug is a
+  BLOCKER. Is the fix minimal (shape frozen, only the named behavior delta)? Does
+  the named regression test fail pre-fix and pass post-fix — run both sides when
+  cheap. Is the sibling-parity table filled from actual greps of the sibling, not
+  assumption? Is the release checklist present with machine-key items checkable?
 
 ## Output
 

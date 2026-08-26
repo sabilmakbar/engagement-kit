@@ -1,8 +1,21 @@
 {
-  "name": "dev-pipeline",
-  "version": "0.1.0",
-  "description": "Mode-aware development pipeline: FDE-flavored PM interview skill and a fresh-context tech-lead reviewer, with spec/story/decision-spine templates. Four engagement modes: greenfield, feature, refactor, derivative.",
+  "name": "engagement-kit",
+  "version": "0.2.0",
+  "description": "Mode-aware engagement process: FDE-flavored PM interview skill and a fresh-context tech-lead reviewer, with spec/story/decision-spine/release templates and two-key gates. Five engagement modes: greenfield, feature, refactor, derivative, maintenance.",
   "author": {
     "name": "sabilmakbar"
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/engagement-nudge.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
   }
 }
