@@ -36,6 +36,9 @@ If the section can't fit the budget, the story is too big — split it. Include:
 - **Constraints:** [from the spec's mode section — invariants, regression surface]
 - **Testing:** [framework, where tests live, what must pass; for refactor mode: which
   characterization tests must stay green]
+- **Live-call timeouts:** [every task that touches the network (health probes,
+  model-list checks, API smoke) names its explicit short timeout here — a story
+  without timeouts on live calls is not ready for eng]
 - **Out of scope for this story:** [...]
 
 ## 5. Dev agent record

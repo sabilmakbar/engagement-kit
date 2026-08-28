@@ -22,11 +22,18 @@ that is a finding, not a reason to improvise.
 1. Record the base git SHA in section 5 (`Base SHA:`) before changing anything.
 2. Read the consumer repo's `docs/decision-spine.md` if it exists — live ADs bind
    you; contradicting one without escalating is a violation.
-3. Execute section 3's tasks. Check each box as it completes. Append new tasks only
-   if the work forces them (link to the AC they serve).
+3. Execute section 3's tasks. Check each task's box in the story file IMMEDIATELY
+   when it completes — write-through, never batched at the end — and append
+   section-5 notes incrementally as changes and decisions happen. A killed run must
+   leave resume state inside the story file. If the story already shows a prior
+   incomplete round (checked boxes, no completion note), continue from the first
+   unchecked box and note the takeover in section 5. Append new tasks only if the
+   work forces them (link to the AC they serve).
 4. Follow Dev Notes constraints exactly (invariants, regression surface, testing
    requirements). Run the tests the story names; the suite state the story promises
-   must hold before you finish.
+   must hold before you finish. Every live network call you run carries an explicit
+   short timeout (seconds, not minutes) — no command may block unbounded; a hung
+   call must fail fast and land as a section-5 note, not a stalled run.
 5. Write section 5 per round, append-only: completion notes, files changed,
    decisions made and why, and the **proposed commit sequence** — logical changes
    at the lowest sensible scope, one concise line each, following the repo's

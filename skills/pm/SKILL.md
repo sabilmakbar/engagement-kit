@@ -192,9 +192,19 @@ For each story, in order:
    verdict, evidence summary, any `needs-human` ACs verbatim, and eng's proposed
    commit sequence (approval and execution of commits are the user's, or an
    installed git guard's — never eng's).
-5. **Fail** → append QA's findings to the story file, then RESUME the same eng
-   agent with those findings. Cap: `ENGAGEMENT_KIT_FIX_ROUNDS` rounds (default 3);
-   cap reached → stop and escalate the open findings to the user.
+5. Classify every eng invocation's outcome before reacting — the two failure
+   classes have separate budgets:
+   - **quality-fail** (QA verdict fail, or user reject): append QA's findings to
+     the story file, then RESUME the same eng agent with those findings. Cap:
+     `ENGAGEMENT_KIT_FIX_ROUNDS` rounds (default 3); cap reached → stop and
+     escalate the open findings to the user.
+   - **infra-fail** (stall, watchdog kill, crash — the run died WITHOUT a verdict
+     on the work): does NOT consume a fix round. Own budget:
+     `ENGAGEMENT_KIT_INFRA_RETRIES` (default 2), and every retry must change one
+     named variable (fresh agent instead of resume, a longer/shorter timeout, a
+     later attempt) — never rerun the identical setup. Eng's write-through rule
+     means the story file carries resume state, so a fresh eng continues from the
+     first unchecked box. Budget exhausted → escalate with the stall evidence.
 
 Section ownership holds throughout: eng writes 3+5 (append-only per round), qa
 writes 6 only, checkpoints are checked by their key-holders alone.

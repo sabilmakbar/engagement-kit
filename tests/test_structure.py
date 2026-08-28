@@ -122,8 +122,11 @@ class TestAgents(unittest.TestCase):
         # eng may not spawn subagents (its whole input is one story file) and
         # its body must forbid running commits itself.
         self.assertNotIn("Agent", self.agent_tools("eng"))
-        body = (ROOT / "agents/eng.md").read_text()
-        self.assertIn("never run `git commit`", body.lower())
+        body = " ".join((ROOT / "agents/eng.md").read_text().lower().split())
+        self.assertIn("never run `git commit`", body)
+        # v0.3.1 field fixes stay in: write-through progress + fail-fast net calls
+        self.assertIn("write-through", body)
+        self.assertIn("explicit short timeout", body)
 
     def test_qa_contract(self):
         # qa edits section 6 only: no Write (new files) and no subagents.
