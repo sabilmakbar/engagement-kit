@@ -39,17 +39,21 @@ If the section can't fit the budget, the story is too big — split it. Include:
 - **Out of scope for this story:** [...]
 
 ## 5. Dev agent record
-<!-- Dev agent only. -->
+<!-- eng agent only. Append a new entry per round, never overwrite. -->
+- Base SHA: [recorded before any change]
 - Completion notes: [...]
 - Files changed: [...]
 - Decisions made & why: [...]
+- Proposed commits: [one line each, logical changes, lowest sensible scope —
+  proposals only; execution is approved at the done checkpoint or by a git guard]
 
 ## 6. Verification results
-<!-- Fresh context only (spec + diff, never the executor's chat). Verdict + evidence.
-Check TWO things, not one: (a) acceptance criteria met; (b) the work obeys the
-engagement's standing rules — naming, provenance, conventions recorded in the spec,
-spine, or Dev Notes constraints. Delegated work that passes ACs while breaking a
-session rule is a FAIL. -->
+<!-- qa agent only (story + spec + diff; never the executor's chat). Verdict +
+evidence. Check TWO things, not one: (a) acceptance criteria met; (b) the work obeys
+the engagement's standing rules — naming, provenance, conventions recorded in the
+spec, spine, or Dev Notes constraints. Delegated work that passes ACs while breaking
+a session rule is a FAIL. ACs a machine cannot judge are marked needs-human, never
+auto-passed. -->
 - Verdict: `pass | fail`
 - Evidence: [test run output summary, what was checked beyond the ACs]
 - Findings: [...]

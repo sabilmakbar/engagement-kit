@@ -114,6 +114,23 @@ class TestAgents(unittest.TestCase):
         for write_tool in ("Edit", "Write", "NotebookEdit"):
             self.assertNotIn(write_tool, tools.split(", "))
 
+    def agent_tools(self, name):
+        fm = frontmatter(ROOT / f"agents/{name}.md")
+        return re.search(r"^tools: (.+)$", fm, re.MULTILINE).group(1).split(", ")
+
+    def test_eng_contract(self):
+        # eng may not spawn subagents (its whole input is one story file) and
+        # its body must forbid running commits itself.
+        self.assertNotIn("Agent", self.agent_tools("eng"))
+        body = (ROOT / "agents/eng.md").read_text()
+        self.assertIn("never run `git commit`", body.lower())
+
+    def test_qa_contract(self):
+        # qa edits section 6 only: no Write (new files) and no subagents.
+        tools = self.agent_tools("qa")
+        self.assertNotIn("Write", tools)
+        self.assertNotIn("Agent", tools)
+
 
 class TestNoStaleContent(unittest.TestCase):
     def content_files(self):

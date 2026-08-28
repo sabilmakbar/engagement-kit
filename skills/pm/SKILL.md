@@ -171,3 +171,30 @@ rules — and prompt the user to commit the spec and decision spine (durable art
 committing is their call, per their git conventions). If sign-off stalls or the
 session ends unsigned, say plainly in your final message which durable artifacts sit
 uncommitted.
+
+## Step 5 — Execution loop (per story, after sign-off)
+
+Runs ONLY in the session where this skill was invoked — the session that owns the
+consumer repo. Never orchestrate another repo's stories from elsewhere.
+
+For each story, in order:
+
+1. Verify the story's **spec checkpoint** shows both keys (machine + human). The
+   human key is a standalone ask if not yet given.
+2. Spawn the `eng` agent (plugin-installed: `engagement-kit:eng`) in the
+   background, narrating progress. Its ENTIRE prompt is the story file's path —
+   no summaries, no extra context. That input contract is the kit's core bet;
+   never soften it.
+3. On eng completion, spawn the `qa` agent (`engagement-kit:qa`) with the story
+   path, spec path, and diff scope (section 5's base SHA). Never hand it eng's
+   output or transcript.
+4. **Pass** → the **done checkpoint** human key: a standalone ask presenting the
+   verdict, evidence summary, any `needs-human` ACs verbatim, and eng's proposed
+   commit sequence (approval and execution of commits are the user's, or an
+   installed git guard's — never eng's).
+5. **Fail** → append QA's findings to the story file, then RESUME the same eng
+   agent with those findings. Cap: `ENGAGEMENT_KIT_FIX_ROUNDS` rounds (default 3);
+   cap reached → stop and escalate the open findings to the user.
+
+Section ownership holds throughout: eng writes 3+5 (append-only per round), qa
+writes 6 only, checkpoints are checked by their key-holders alone.

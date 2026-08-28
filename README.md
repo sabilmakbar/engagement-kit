@@ -4,15 +4,20 @@ A thin, mode-aware engagement process for Claude Code: specialized roles built a
 skills + subagents, with document handoffs and two-key gates between them.
 
 **Pipeline:** FDE-flavored PM (interactive, main session) → Tech Lead review
-(fresh-context agent) → per-story build loop with two human checkpoints (spec, done)
-and fresh-context verification.
+(fresh-context agent) → per-story execution loop: `eng` (story-file-only executor)
+→ `qa` (asymmetric verifier) → two human checkpoints (spec, done), fix rounds
+bounded (`ENGAGEMENT_KIT_FIX_ROUNDS`, default 3).
 
-**Deliberately no dev/QA personas.** A gap audit over three real multi-session
-projects found the failures were stale state, unowned findings, and unfrozen
-conventions — never missing roles — while context handoffs between agents were
-themselves a failure mode. The PM and Tech Lead survive because they are artifacts
-(the interview; the information-asymmetric reviewer), not org chart. Revisit only
-with new evidence.
+**Roles are input contracts, not personas.** A 2026-08-12 gap audit rejected
+dev/QA personas: observed failures were process failures, never missing roles.
+SUPERSEDED 2026-08-28, evidence: the first full consumer engagement
+(postgrad-advisor) stalled exactly at execution — stories written for an executor
+and verifier that existed only as prose, so every consumer session had to
+improvise them, unenforced. v0.3 ships `eng` and `qa` as **enforcement agents**:
+eng receives ONLY the story file (self-containment becomes load-bearing), qa
+receives only story+spec+diff (verification is asymmetric by construction).
+What the audit rejected — role-play characters and chat handoffs — stays
+rejected; these are the kit's two oldest rules turned into mechanisms.
 
 ## The five modes
 
@@ -32,7 +37,7 @@ which artifacts the engagement actually earns.
 ```
 .claude-plugin/        # plugin + marketplace manifests (incl. nudge hook wiring)
 skills/pm/             # /pm — interview + spec authoring (SKILL.md + templates)
-agents/tech-lead.md    # fresh-context spec reviewer, read-only tools
+agents/                # tech-lead (spec reviewer), eng (executor), qa (verifier)
 hooks/                 # session-start engagement nudge (UserPromptSubmit)
 tests/                 # structure tests: python3 -m unittest discover tests
 ```
