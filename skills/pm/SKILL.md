@@ -28,10 +28,28 @@ A meta-invocation ("review what X does", "re-probe the goals of this tooling") f
 mode yet. Say so, interview first, and classify the moment real scope emerges —
 classify-after-reprobe is allowed; silently never classifying is not.
 
+**Scale the artifacts to the engagement, never the gates.** Judge the size once the
+mode is set, and say which artifacts this engagement earns:
+
+- one self-contained change → a spec and ONE story; no separate story files beyond it;
+- no architecture or convention decision settled → no decision-spine file (create it
+  the moment the first AD exists);
+- nothing deferred → no `dev/deferred-work.md`.
+
+What never scales down: grounding before interviewing, the direction gate, the spec's
+ground truth and Measurements, the tech-lead review, both keys at both checkpoints,
+and blinded verification. Those are the process; the documents are just its residue.
+A small engagement writes less, not weaker.
+
 ## Step 1 — Ground before you ask
 
-Never open the interview cold. First build ground truth, delegating broad exploration
-to an Explore subagent (conclusions only, not file dumps into your context):
+Never open the interview cold. First build ground truth. Grounding is the
+requirement; delegation is only the cheapest method — delegate broad exploration to
+an Explore subagent when subagents are available and permitted (conclusions only,
+not file dumps into your context); otherwise ground directly with Grep/Glob and
+targeted reads. Say which path you took, so nobody mistakes a direct pass for
+skipped grounding. Never let a standing no-subagents instruction become a reason to
+interview ungrounded.
 
 - `feature` / `refactor`: the repo — architecture, the subsystems this work touches,
   existing tests, current behavior that must not break.
@@ -82,8 +100,10 @@ Mode-specific must-pins:
   integration points; explicit out-of-scope list.
 - **refactor**: which quality attribute is being bought (testability, performance,
   decoupling — pick, don't collect); behavioral invariants that must hold; explicit
-  out-of-scope (unbounded refactors sprawl); state in the spec that characterization
-  tests for every invariant must exist and pass before any story's spec checkpoint.
+  out-of-scope (unbounded refactors sprawl); fill the spec's invariant table — each
+  invariant mapped to the test that pins it, with the command that runs it and
+  evidence the test was made to FAIL when the behavior broke. Never write a mapping
+  you have not run: an invariant nobody can pin is recorded as unpinned, plainly.
 - **derivative**: build the delta table — what carries over as-is, what changes for
   the new use case, what gets dropped, what's new. Then surface **copy vs. extract**
   as a named decision for the user: fork a standalone copy, or extract a shared core
@@ -110,7 +130,11 @@ engagement's first AD in the decision spine. Write no artifact before this gate.
 Only after the direction gate.
 
 - Spec: fill `spec-template.md` (this folder) → `docs/specs/<engagement-name>.md`.
-  Durable, belongs in git.
+  Durable, belongs in git. Volatile values (test counts, coverage, timings, line
+  counts) go in the freeze-exempt **Measurements** table with the command that
+  reproduces each one; everywhere else name the measure, never its value — a
+  number written into a scenario or success criterion is stale the moment the next
+  story lands.
 - Stories: fill `story-template.md` per story → `dev/stories/NNN-<slug>.md`.
   Working state, stays untracked (ensure `dev/` is gitignored). Each story must be
   executable by a fresh-context agent: Dev Notes carry every file reference, pattern,
@@ -145,8 +169,13 @@ feedback":
 Run review rounds in the background and narrate progress — never leave the user idle
 behind a blocking review.
 
-The loop is bounded: at most 3 review rounds. If the verdict is not READY by then,
-take the open findings to the user rather than iterating further. Any scope-bearing
+The loop is bounded by finding CLASS, not by arithmetic: stop as soon as a round
+produces no `intent_gap` and no `bad_ground` findings. Those two classes mean the
+spec is WRONG — misread intent, or reasoned from false facts — and only they earn
+another full pass. A round returning nothing but `patch`/`defer`/`reject` findings
+is polish: apply the patches and stop, do not spend a round to re-read them.
+Hard ceiling: 3 rounds regardless. If the verdict is not READY by then, take the
+open findings to the user rather than iterating further. Any scope-bearing
 amendment AFTER a READY verdict re-opens review: re-trigger the tech lead if a round
 remains, otherwise present the change as explicitly unreviewed in the sign-off ask.
 
@@ -208,3 +237,28 @@ For each story, in order:
 
 Section ownership holds throughout: eng writes 3+5 (append-only per round), qa
 writes 6 only, checkpoints are checked by their key-holders alone.
+
+## Step 6 — Close the engagement
+
+When every story has crossed its done checkpoint, run ONE close review: spawn
+`tech-lead` with the prompt naming **close review**, and give it the spec path, the
+decision spine, the accumulated diff (first story's base SHA to HEAD, plus dirty
+tree), and the completed story files. It reads eng's section-5 rationales; it never
+talks to eng or qa, and they never answer it — written judgement travels, live
+advocacy does not.
+
+Per-story acceptance is settled; the close review asks the question no per-story
+reviewer could: does the system AS BUILT match the architecture the spec described,
+and does it obey every live AD?
+
+Triage its findings with the same taxonomy as Step 4, at engagement level:
+- built shape diverges and the SPEC was right → new story, or a deferred-work entry
+  with a promote trigger;
+- built shape diverges and the BUILD was right → spec change-log entry (scope change
+  → re-sign-off), or a superseding AD in the spine;
+- violated live AD → BLOCKER: fix, or supersede the AD deliberately with the user.
+
+Present the outcome in one standalone close summary: what shipped, what diverged and
+where it landed, open deferred items and their triggers, and any Measurements drift.
+Then prompt the user to commit the durable artifacts. If the engagement ships a
+release, the release checklist runs after this, not before.

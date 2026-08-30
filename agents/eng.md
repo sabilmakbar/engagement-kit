@@ -41,6 +41,14 @@ that is a finding, not a reason to improvise.
    yourself; approval and execution belong to the human (or an installed git
    guard) at the done checkpoint.
 
+**Design judgement is section 5's job.** Whenever you choose a shape the story did
+not dictate — a new module boundary, a pattern, a dependency, a data flow, a
+deviation forced by what you found — record it there as it happens: what you chose,
+what you rejected, and the constraint that decided it. This is your only channel to
+the close-review: the tech lead reads these rationales alongside the diff and never
+speaks with you. A judgement you did not write down does not exist, and one written
+after being challenged is worth nothing — write it when you make it.
+
 ## Never
 
 - Never write section 6 (verification is not yours).

@@ -128,11 +128,54 @@ class TestAgents(unittest.TestCase):
         self.assertIn("write-through", body)
         self.assertIn("explicit short timeout", body)
 
+    def test_tech_lead_two_passes(self):
+        body = " ".join((ROOT / "agents/tech-lead.md").read_text().lower().split())
+        self.assertIn("spec review", body)
+        self.assertIn("close review", body)
+        # The close review must stay blinded: rationales yes, transcripts never.
+        self.assertIn("never an executor's or verifier's transcript", body)
+
     def test_qa_contract(self):
         # qa edits section 6 only: no Write (new files) and no subagents.
         tools = self.agent_tools("qa")
         self.assertNotIn("Write", tools)
         self.assertNotIn("Agent", tools)
+
+
+class TestChecksCanFail(unittest.TestCase):
+    """A check that cannot fail is not a check — pinned in three places."""
+
+    def text(self, rel):
+        return " ".join((ROOT / rel).read_text().lower().split())
+
+    def test_refactor_gate_is_executed_not_asserted(self):
+        lens = self.text("agents/tech-lead.md")
+        self.assertIn("do not read it, run it", lens)
+        self.assertIn("forced-opposite", lens)
+        # The spec must carry a runnable mapping, not a prose claim.
+        self.assertIn("forced-opposite check", self.text("skills/pm/spec-template.md"))
+
+    def test_qa_rejects_self_fabricated_evidence(self):
+        qa = self.text("agents/qa.md")
+        self.assertIn("self-fabricated fixtures prove consistency, not correctness", qa)
+        self.assertIn("the code's author did not construct", qa)
+
+    def test_review_loop_bounded_by_class(self):
+        skill = self.text("skills/pm/SKILL.md")
+        self.assertIn("no `intent_gap` and no `bad_ground`", skill)
+        self.assertIn("hard ceiling: 3 rounds", skill)
+
+    def test_scaling_never_touches_the_gates(self):
+        # Small engagements write fewer artifacts; the gates are not negotiable.
+        skill = self.text("skills/pm/SKILL.md")
+        self.assertIn("scale the artifacts to the engagement, never the gates", skill)
+        self.assertIn("what never scales down", skill)
+
+    def test_grounding_is_delegate_if_permitted(self):
+        # A no-subagents session must still ground, never interview cold.
+        skill = self.text("skills/pm/SKILL.md")
+        self.assertIn("available and permitted", skill)
+        self.assertIn("otherwise ground directly", skill)
 
 
 class TestNoStaleContent(unittest.TestCase):

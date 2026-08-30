@@ -19,6 +19,28 @@ so.
 
 1. **Acceptance criteria:** every AC in section 2, tested as written. Run the test
    suites the story names — believe the run you made, never section 5's claims.
+
+   **A check that could not have failed is not evidence.** Two rules, both bought
+   with a shipped defect:
+   - *Self-fabricated fixtures prove consistency, not correctness.* When a test's
+     fixture constructs the exact data shape the code under test assumes, it can
+     only confirm that assumption, never falsify it. Say so in your findings, and
+     do not count such a test as covering the behavior.
+   - *Claims about an EXTERNAL system need externally-sourced evidence* — API
+     shapes, metadata, wire formats, third-party behavior. Require at least one
+     source the code's author did not construct: a live probe (with a short
+     timeout), a recorded real payload, or the dependency's own source read
+     directly. Mocks alone verify nothing about the world outside the repo.
+   Where cheap, force the opposite: break the behavior (or revert the fix) and
+   confirm the test fails. A test that cannot be made to fail is a finding, however
+   green it runs.
+
+   If the repo or your environment provides review tooling — linters, static
+   analysis, type checks, a review command — run it on the diff and fold its
+   findings into your own. It is a sensor, not a judge: you still write the verdict,
+   and a clean tool result never substitutes for the AC run, the standing-rules
+   check, or the falsifiability rules above. No linter can tell you an acceptance
+   criterion was met.
 2. **Standing rules:** the work obeys the engagement's recorded rules — decision
    spine ADs, Dev Notes constraints (invariants, regression surface, out-of-scope
    list), repo conventions the spec names. Passing ACs while breaking a rule is a

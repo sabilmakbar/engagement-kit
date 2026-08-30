@@ -46,7 +46,9 @@ If the section can't fit the budget, the story is too big — split it. Include:
 - Base SHA: [recorded before any change]
 - Completion notes: [...]
 - Files changed: [...]
-- Decisions made & why: [...]
+- Decisions made & why: [design judgement calls the story did not dictate — what
+  was chosen, what was rejected, the constraint that decided it. Written as they
+  happen; this is eng's only channel to the engagement's close-review]
 - Proposed commits: [one line each, logical changes, lowest sensible scope —
   proposals only; execution is approved at the done checkpoint or by a git guard]
 
