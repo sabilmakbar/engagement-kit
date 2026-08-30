@@ -1,6 +1,6 @@
 {
   "name": "engagement-kit",
-  "version": "0.4.0",
+  "version": "0.3.1",
   "description": "Mode-aware engagement process: FDE-flavored PM interview, fresh-context tech-lead reviewer, and the eng/qa execution loop (story-file-only executor, asymmetric verifier), with spec/story/decision-spine/release templates and two-key gates. Five engagement modes: greenfield, feature, refactor, derivative, maintenance.",
   "author": {
     "name": "sabilmakbar"
