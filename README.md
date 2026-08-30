@@ -3,10 +3,16 @@
 A thin, mode-aware engagement process for Claude Code: specialized roles built as
 skills + subagents, with document handoffs and two-key gates between them.
 
-**Pipeline:** FDE-flavored PM (interactive, main session) → Tech Lead review
+**Pipeline:** FDE-flavored PM (interactive, main session) → Tech Lead spec review
 (fresh-context agent) → per-story execution loop: `eng` (story-file-only executor)
 → `qa` (asymmetric verifier) → two human checkpoints (spec, done), fix rounds
-bounded (`ENGAGEMENT_KIT_FIX_ROUNDS`, default 3).
+bounded (`ENGAGEMENT_KIT_FIX_ROUNDS`, default 3) → Tech Lead **close review** over
+the accumulated diff, catching shape drift no per-story reviewer can see.
+
+**Nobody converses.** Roles exchange only artifacts: eng records design judgement in
+the story's section 5, the close review weighs those rationales against the built
+code, and neither ever reads the other's transcript. Written judgement travels;
+live advocacy does not.
 
 **Roles are input contracts, not personas.** A 2026-08-12 gap audit rejected
 dev/QA personas: observed failures were process failures, never missing roles.
@@ -59,6 +65,21 @@ per-project copying. In the target project, run `/pm` and add `dev/` to that
 project's `.gitignore` (the skill reminds you). The nudge hook fires on a session's
 first message (or after a 4h gap; tune with `ENGAGEMENT_KIT_NUDGE_GAP` seconds) and
 suggests classifying new work through `/pm`; it stays quiet otherwise.
+
+## Why it is built this way
+
+Design decisions live in `docs/`, not in anyone's memory:
+
+- [DESIGN-roles.md](docs/DESIGN-roles.md) — roles as input contracts; why PM is a skill
+  and the rest are agents; what the "no personas" position did and did not supersede.
+- [DESIGN-gates.md](docs/DESIGN-gates.md) — two-key gates, the direction gate, loops
+  bounded by finding class, and why artifacts scale but gates never do.
+- [DESIGN-evidence.md](docs/DESIGN-evidence.md) — a check must be able to fail:
+  executed refactor gates, rejected self-made evidence, volatile facts.
+- [DESIGN-artifacts.md](docs/DESIGN-artifacts.md) — documents as the message bus, the
+  decision spine, tracked versus untracked, freeze.
+- [INTERNALS.md](docs/INTERNALS.md) — undocumented Claude Code behaviour the design
+  rests on, each entry with how to re-check it.
 
 ## Artifact policy
 
