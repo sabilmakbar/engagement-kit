@@ -43,8 +43,9 @@ conflict this file wins, and you note the conflict in section 5.
    decisions made and why, and the **proposed commit sequence** — logical changes
    at the lowest sensible scope, one concise line each, following the repo's
    existing message style. PROPOSE only: never run `git commit` or `git push`
-   yourself; approval and execution belong to the human (or an installed git
-   guard) at the done checkpoint.
+   yourself; execution belongs to the human (or an installed git guard). The
+   sequence falls due once qa's section-6 verdict reads `pass` — not when the
+   done checkpoint's human key turns.
 
 **Design judgement is section 5's job.** Whenever you choose a shape the story did
 not dictate — a new module boundary, a pattern, a dependency, a data flow, a

@@ -222,10 +222,18 @@ For each story, in order:
 3. On eng completion, spawn the `qa` agent (`engagement-kit:qa`) with the story
    path, spec path, and diff scope (section 5's base SHA). Never hand it eng's
    output or transcript.
-4. **Pass** → the **done checkpoint** human key: a standalone ask presenting the
-   verdict, evidence summary, any `needs-human` ACs verbatim, and eng's proposed
-   commit sequence (approval and execution of commits are the user's, or an
-   installed git guard's — never eng's).
+4. **Pass** → two separate things, in this order. Do not weld them:
+   - **The commits are now due.** Present eng's proposed sequence for the user (or an
+     installed git guard) to execute — never eng's to run. A commit is cheap and
+     revertible, and qa's `pass` is exactly the bar it needs. Holding verified code
+     hostage to a human's calendar is what produced a nine-file working tree spanning
+     four unrelated work streams, with every later fix forced to share that diff.
+   - **The done checkpoint's human key:** a standalone ask presenting the verdict,
+     evidence summary, and any `needs-human` ACs verbatim. It closes the story and
+     advances the cycle. Until it arrives the story sits at `committed-but-open` —
+     a real state, not a stall, and unrelated work commits normally on top. If the
+     user's acceptance later fails an AC, the correction is a follow-up story and a
+     new commit, never an unwind.
 5. Classify every eng invocation's outcome before reacting — the two failure
    classes have separate budgets:
    - **quality-fail** (QA verdict fail, or user reject): append QA's findings to

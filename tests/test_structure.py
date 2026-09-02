@@ -198,6 +198,16 @@ class TestChecksCanFail(unittest.TestCase):
                 msg=name,
             )
 
+    def test_commit_is_gated_by_the_machine_key_only(self):
+        # The human key closes the story; it does not hold the commit hostage.
+        story = self.text("skills/pm/story-template.md")
+        self.assertIn("committed-but-open", story)
+        self.assertIn("it never gates the commit", story)
+        self.assertIn(
+            "not when the done checkpoint's human key turns", self.text("agents/eng.md")
+        )
+        self.assertIn("the commits are now due", self.text("skills/pm/SKILL.md"))
+
     def test_grounding_is_delegate_if_permitted(self):
         # A no-subagents session must still ground, never interview cold.
         skill = self.text("skills/pm/SKILL.md")

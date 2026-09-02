@@ -43,6 +43,34 @@ engagement. The done checkpoint's machine key is qa's `pass` verdict from a fres
 context; ACs a machine cannot judge (tone, feel) are marked `needs-human` and surface
 verbatim in the ask rather than being auto-passed.
 
+## What each key authorizes
+
+The two keys answer different questions, so they authorize different things:
+
+- **Machine key** — *does the code do what the story says?* qa can settle that, and it
+  is exactly the bar a commit needs. A `pass` verdict makes the story's proposed commits
+  **due**. Due, not automatic: eng still never runs them, and the user's own git
+  conventions (or an installed git guard) still gate each execution.
+- **Human key** — *did the story say the right thing?* Only the user can answer it, so
+  it gates the story's **closure** and the cycle advancing. It does not gate the commit.
+
+Between them sits a state the kit now names: **committed-but-open** — code landed and
+verified, acceptance still pending.
+
+Bought by observation, postgrad-advisor 2026-09-01: story 009 held a `pass` across three
+rounds (including 7-of-7 mutation kills and an AC pin proved against a pristine
+`git archive HEAD` checkout) while its human key waited two days on ten minutes of owner
+availability. The kit's one-logical-change-per-commit convention held every commit in
+the meantime, so the tree grew to nine dirty files across four unrelated work streams;
+three defects found in a *different* subsystem then had to be staged against a diff they
+had no dependency on. The gate bought nothing — a failed acceptance is a follow-up
+commit, not an unwind — and cost bisectability plus the serialisation of unrelated work
+behind one calendar.
+
+The human key still earns its place: in that engagement every defect it caught was of
+one class — the code did exactly what the story said, and the story said something
+slightly wrong. It just should not also be a commit gate.
+
 ## The direction gate
 
 Everything before it is read-only. The PM closes the interview with a short plan in chat
@@ -86,6 +114,7 @@ light mode that thins documents is fine; one that thins gates deletes the produc
 ## Binds
 
 - No gate may be presented while its machine key is red.
+- No gate may block work that does not depend on the question it asks.
 - Sign-off asks are never batched with anything.
 - Scope-bearing amendments after a READY verdict re-open review, or are presented as
   explicitly unreviewed.
@@ -104,3 +133,6 @@ light mode that thins documents is fine; one that thins gates deletes the produc
   model cannot grant itself and (per the 2026-08-29 competitive read) the kit's most
   defensible property.
 - **A round counter as the primary stop condition** — kept only as a ceiling; see above.
+- **The done checkpoint gating the commit too** — the shipped 0.3 behaviour, withdrawn
+  above. It conflated "is this story finished?" with "is this code committed?", and the
+  first question's latency (a human's availability) became the second question's.

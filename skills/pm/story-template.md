@@ -5,14 +5,21 @@ section 6 is written from a fresh context that did NOT execute the story. Nobody
 another section's content. -->
 
 ## 1. Status
-`draft | ready | in-progress | in-verification | done`
+`draft | ready | in-progress | in-verification | committed-but-open | done`
+
+<!-- committed-but-open: verified and landed, still waiting on its human key. A real
+state, not a stall — later, unrelated work commits normally on top of it. -->
 
 Two gates per story, each needing two keys — work does not cross an unchecked gate:
 - [ ] **spec checkpoint** — machine key: tech-lead verdict READY and current, ACs
       unambiguous (refactor mode: characterization tests exist and pass). Human key:
       user approved this story's scope and ACs, in a standalone ask.
 - [ ] **done checkpoint** — machine key: section 6 verdict `pass` from a fresh
-      context. Human key: user accepted the result.
+      context; this key alone makes the story's commits DUE, because it answers the
+      only question a commit needs — does the code do what the story says. Human key:
+      user accepted the result. It closes the story and advances the cycle; it answers
+      the different question of whether the story said the right thing, and it never
+      gates the commit.
 
 ## 2. Story
 As a [role], I want [capability], so that [outcome].
@@ -50,7 +57,8 @@ If the section can't fit the budget, the story is too big — split it. Include:
   was chosen, what was rejected, the constraint that decided it. Written as they
   happen; this is eng's only channel to the engagement's close-review]
 - Proposed commits: [one line each, logical changes, lowest sensible scope —
-  proposals only; execution is approved at the done checkpoint or by a git guard]
+  proposals only; due once section 6 reads `pass`, executed by the human or an
+  installed git guard, never by eng]
 
 ## 6. Verification results
 <!-- qa agent only (story + spec + diff; never the executor's chat). Verdict +
