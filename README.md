@@ -81,6 +81,9 @@ Design decisions live in `docs/`, not in anyone's memory:
 - [INTERNALS.md](docs/INTERNALS.md) — undocumented Claude Code behaviour the design
   rests on, each entry with how to re-check it.
 
+Every acronym and coined term the kit uses — AC, AD, FDE, the triage classes, the
+verdicts, the story statuses — is defined in [GLOSSARY.md](docs/GLOSSARY.md).
+
 ## Artifact policy
 
 - **Tracked** (durable, describes the system): `docs/specs/*.md`,

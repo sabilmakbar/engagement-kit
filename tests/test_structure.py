@@ -215,6 +215,43 @@ class TestChecksCanFail(unittest.TestCase):
         self.assertIn("otherwise ground directly", skill)
 
 
+class TestGlossary(unittest.TestCase):
+    """A term used in an engagement's output but undefined here is a doc bug."""
+
+    def glossary(self):
+        return (ROOT / "docs/GLOSSARY.md").read_text()
+
+    def test_covers_every_env_var(self):
+        # Derived, not hardcoded: a new knob added anywhere fails this until
+        # it is documented.
+        used = set()
+        for path in ROOT.rglob("*"):
+            if path.is_file() and path.suffix in (".md", ".sh", ".json"):
+                used |= set(re.findall(r"ENGAGEMENT_KIT_[A-Z_]+", path.read_text()))
+        self.assertTrue(used, "no env vars found — the sweep itself is broken")
+        for var in used:
+            self.assertIn(var, self.glossary(), msg=var)
+
+    def test_covers_controlled_vocabulary(self):
+        text = self.glossary()
+        for term in (
+            # triage classes
+            "intent_gap", "bad_ground", "patch", "defer", "reject",
+            # story statuses
+            "draft", "ready", "in-progress", "in-verification",
+            "committed-but-open", "done",
+            # verdicts and severities
+            "READY", "NEEDS-REFINEMENT", "pass", "fail", "needs-human",
+            "BLOCKER", "HIGH", "MEDIUM", "LOW",
+            # failure classes and the modes
+            "quality-fail", "infra-fail",
+            "greenfield", "feature", "refactor", "derivative", "maintenance",
+            # identifiers a reader meets in artifacts
+            "AC", "AD", "ADR", "FR", "SC", "Base SHA", "PM", "FDE", "QA",
+        ):
+            self.assertIn(term, text, msg=term)
+
+
 class TestNoStaleContent(unittest.TestCase):
     def content_files(self):
         return list(ROOT.glob("skills/**/*.md")) + list(ROOT.glob("agents/*.md"))
