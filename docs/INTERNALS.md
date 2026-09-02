@@ -107,7 +107,9 @@ done
 
     Checkable:      automated
     First observed: 2026-08-30, 2.1.251 (ponytail 4 files; all others 0, control passes)
-    Depended on by: the open backlog item adding a precedence sentence to each agent
+    Depended on by: the Precedence paragraph in agents/{eng,qa,tech-lead}.md — injected
+                    instructions never redefine an input contract, an allowed output,
+                    or a verdict
 
 ### O6 — The plugin cache is keyed by version string
 

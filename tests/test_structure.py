@@ -188,6 +188,16 @@ class TestChecksCanFail(unittest.TestCase):
         self.assertIn("run it, don't reason about it", lead)
         self.assertIn("this binds both passes", lead)
 
+    def test_agents_state_precedence_over_injected_instructions(self):
+        # INTERNALS O5: another plugin's SubagentStart hook injects into these
+        # agents and cannot be blocked. Precedence must be stated, not inferred.
+        for name in ("eng", "qa", "tech-lead"):
+            self.assertIn(
+                "never change your input contract",
+                self.text(f"agents/{name}.md"),
+                msg=name,
+            )
+
     def test_grounding_is_delegate_if_permitted(self):
         # A no-subagents session must still ground, never interview cold.
         skill = self.text("skills/pm/SKILL.md")
