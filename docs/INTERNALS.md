@@ -41,6 +41,12 @@ instruction that *names* a tool; describe the capability ("search the repo") so 
 agent reaches it by whatever surface actually materialized. Restrictions still hold in
 the safe direction — nothing appeared that was not declared.
 
+**Decision, 2026-09-02: the declarations stay as written.** Trimming them to what
+resolves today would bake one harness version's behaviour into the kit and forfeit the
+tools if it is fixed; the capability is covered by `Bash` either way, and this entry
+carries the reality with a way to re-check it. Revisit only if something *undeclared*
+ever appears, which would break the safe direction.
+
     Checkable:      manual (spawn the agent; have it ATTEMPT the tool, and run the
                     same operation via Bash as a control)
     First observed: 2026-08-30, 2.1.251 (probed twice; second probe attempted rather
