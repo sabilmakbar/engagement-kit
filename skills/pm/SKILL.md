@@ -138,7 +138,12 @@ Only after the direction gate.
 - Stories: fill `story-template.md` per story → `dev/stories/NNN-<slug>.md`.
   Working state, stays untracked (ensure `dev/` is gitignored). Each story must be
   executable by a fresh-context agent: Dev Notes carry every file reference, pattern,
-  and testing requirement needed — the executor never reads the chat history.
+  and testing requirement needed — the executor never reads the chat history. Write
+  every AC as a POSITIVE assertion on an observable result — the field is `None`, the
+  list is empty, the call was never made — never as absence-of-failure ("the fake
+  would have raised"). Absence-of-failure evidence dies silently the moment any
+  handler between the call and the assertion catches, and it reads green while it
+  does.
 - Decision spine: every architecture or convention decision settled during the
   engagement gets an AD entry in `docs/decision-spine.md` (fill
   `decision-spine-template.md` from this folder; create the file on first decision). Durable, tracked. Never re-argue a live AD —

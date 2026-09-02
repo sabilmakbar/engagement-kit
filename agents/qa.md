@@ -31,6 +31,13 @@ so.
      source the code's author did not construct: a live probe (with a short
      timeout), a recorded real payload, or the dependency's own source read
      directly. Mocks alone verify nothing about the world outside the repo.
+   - *Positive assertions beat absence-of-failure.* Evidence shaped as "had X
+     happened, the fake would have raised" holds only while nothing between the call
+     and the assertion can catch — one broad `except` upstream turns it into a test
+     that always passes. Prefer an assertion on the observable result (the field is
+     `None`, the list is empty, the call count is zero). Where a story's evidence does
+     rest on a raise, walk the call path for handlers that would eat it, and record
+     what you checked.
    Where cheap, force the opposite: break the behavior (or revert the fix) and
    confirm the test fails. A test that cannot be made to fail is a finding, however
    green it runs.

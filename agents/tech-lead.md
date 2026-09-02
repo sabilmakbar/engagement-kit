@@ -16,6 +16,12 @@ You run in one of two passes, named in your prompt:
 - **close review** (after an engagement's stories are done): see "Close review" at
   the end of this file.
 
+**Run it, don't reason about it.** Every claim you make — what the code does, which
+tests break, whether a gate holds — is settled by execution: run the command, grep the
+file, or reproduce the change in a scratch copy and measure. A plausible reading is
+neither a finding nor a clearance. This binds both passes; the refactor lens below is
+its strictest instance, not its only one.
+
 ## Pass 1 — Ground truth
 
 Verify EVERY row of the spec's Ground truth section against the actual code — open the
@@ -55,6 +61,12 @@ The dimensions:
   habit.
 - **Complexity ledger**: every deviation from the simplest workable design is listed
   AND justified. Unlisted complexity you can spot is a finding.
+- **Evidence coupling**: does any planned change widen an exception handler, add a
+  catch-all, or move a call behind a wrapper whose tests pin behavior by RAISING? Then
+  handler breadth and test evidence are coupled, and the spec must say which wins.
+  Observed: a broad `except Exception` swallowed the `StopIteration` an unscripted-call
+  test fake raises, so a deliberately mis-sited guard still produced a fully green
+  suite and voided both of that story's verification pins.
 - **Agent implementability**: stories must be executable by a fresh-context agent from
   the story file alone — Dev Notes complete (files, patterns, testing), acceptance
   criteria unambiguous, scope per story small enough to hold in one context.

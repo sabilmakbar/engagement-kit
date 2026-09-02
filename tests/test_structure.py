@@ -171,6 +171,23 @@ class TestChecksCanFail(unittest.TestCase):
         self.assertIn("scale the artifacts to the engagement, never the gates", skill)
         self.assertIn("what never scales down", skill)
 
+    def test_evidence_survives_the_call_path(self):
+        # Absence-of-failure evidence dies to any handler between call and assert:
+        # qa must walk the path, pm must author positive ACs, tech-lead must flag
+        # work that widens a handler around raise-pinned behavior.
+        self.assertIn(
+            "positive assertions beat absence-of-failure", self.text("agents/qa.md")
+        )
+        self.assertIn("evidence coupling", self.text("agents/tech-lead.md"))
+        self.assertIn("never as absence-of-failure", self.text("skills/pm/SKILL.md"))
+
+    def test_execution_rule_is_not_refactor_only(self):
+        # "run it, don't reason about it" binds both passes, not just the
+        # refactor lens where it was first written.
+        lead = self.text("agents/tech-lead.md")
+        self.assertIn("run it, don't reason about it", lead)
+        self.assertIn("this binds both passes", lead)
+
     def test_grounding_is_delegate_if_permitted(self):
         # A no-subagents session must still ground, never interview cold.
         skill = self.text("skills/pm/SKILL.md")

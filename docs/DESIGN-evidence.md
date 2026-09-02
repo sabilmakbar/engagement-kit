@@ -10,7 +10,7 @@
 
 ## The problem
 
-Three separate engagements shipped a check that could not have caught what it existed to
+Four separate engagements shipped a check that could not have caught what it existed to
 catch. The checks were written in good faith and all of them looked green.
 
 1. **A gate that was never executed.** A refactor spec claimed invariant 4 was pinned by
@@ -27,13 +27,19 @@ catch. The checks were written in good faith and all of them looked green.
 3. **A suite with no boundary case.** Sandbox, 2026-08-30: `rank()` used `>` where the
    spec required `>=`, and the only test used values nowhere near the boundary. Green
    suite, unmet acceptance criterion.
+4. **A handler that ate the evidence.** postgrad-advisor, 2026-09-01: several tests
+   proved a call had NOT happened by relying on a strict fake, which raises
+   `StopIteration` on any unscripted call. A story then added a broad `except Exception`
+   around that call — and `StopIteration` is an `Exception`. A deliberately mis-sited
+   guard still produced 17 passed, with both of the story's verification pins void.
+   The guard and the tests lived in different files and each read fine alone.
 
 Same shape each time: the check was structurally incapable of failing.
 
 ## The decision
 
 **Nothing counts as evidence until it has been shown capable of producing the opposite
-result.** Applied at three points:
+result.** Applied at four points:
 
 - **The refactor gate is executed, not read.** The spec carries an invariant table —
   invariant, pinning test (`file::name`), command, and forced-opposite evidence. The
@@ -48,6 +54,13 @@ result.** Applied at three points:
   wire formats — needs at least one source the code's author did not construct: a live
   probe with a short timeout, a recorded real payload, or the dependency's own source.
   Where cheap, qa breaks the behaviour and confirms the test fails.
+- **Evidence is a positive assertion, not an absence of failure.** "Had it happened, the
+  fake would have raised" is only true while nothing on the path can catch, which no test
+  states and no reviewer sees. ACs are written as assertions on an observable result (the
+  field is `None`, the call count is zero); qa treats raise-based evidence as valid only
+  after walking the call path for handlers; and the tech-lead flags planned work that
+  widens a handler around a call whose tests pin behaviour by raising — handler breadth
+  and test evidence are coupled, and the spec must say which wins.
 - **Ground truth is verified, not accepted.** Every factual claim in a spec carries a file
   reference and the tech-lead opens the file or runs the grep. A false claim is a BLOCKER,
   because the design was reasoned from fiction.
@@ -80,6 +93,9 @@ of that scan ships with a positive control ([INTERNALS O5](INTERNALS.md)).
 ## Binds
 
 - Any new gate ships with a demonstration that it can fail.
+- Any claim about what the code does or which tests break is settled by running it, in a
+  scratch copy where needed — never by reading it. The refactor lens is the strictest
+  instance of this rule, not its only one.
 - Any assertion in `tests/` covering a behavioural rule is sabotage-verified before it
   is trusted.
 - qa may fold in external tooling's findings but still writes its own verdict; a clean
@@ -89,6 +105,7 @@ of that scan ships with a positive control ([INTERNALS O5](INTERNALS.md)).
 
 - Green-suite confidence in an unmet acceptance criterion.
 - Mocks that encode the bug they were written to exclude.
+- Evidence that a handler added elsewhere, later, can silently disarm.
 - A refactor proceeding on invariants nobody pinned.
 
 ## Rejected alternatives
