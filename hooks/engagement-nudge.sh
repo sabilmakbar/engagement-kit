@@ -31,7 +31,7 @@ printf '%s' "$now" > "$state" 2>/dev/null
 
 if [ "$nudge" = 1 ]; then
   cat <<'MSG'
-engagement-kit: first message of this session (or first after a long gap). If this message opens NEW work — building, fixing, refactoring, or scoping something — invoke the engagement-kit:pm skill (Step 0: classify the mode) before free-forming. Quick questions and continuations of existing work: proceed normally and ignore this note.
+engagement-kit: first message of this session (or first after a long gap). If this message opens NEW work — building, fixing, refactoring, or scoping something — invoke the engagement-kit:pm skill (Step 0: classify the mode) before free-forming. Artifacts scale to the work: a single small change earns one story and no separate spine file, not a full document set (the gates never scale). Quick questions and continuations of existing work: proceed normally and ignore this note.
 MSG
 fi
 exit 0
