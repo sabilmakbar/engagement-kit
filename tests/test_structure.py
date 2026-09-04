@@ -1,10 +1,22 @@
 """Structure tests for the engagement-kit plugin. Run: python3 -m unittest discover tests"""
 import json
 import re
+import subprocess
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def tracked_files():
+    """Files git actually ships. Untracked working notes under dev/ must never
+    decide whether the suite passes — a clean clone has to test identically."""
+    out = subprocess.run(
+        ["git", "ls-files", "-z"], cwd=ROOT, capture_output=True, text=True
+    )
+    if out.returncode != 0:
+        return None
+    return [ROOT / f for f in out.stdout.split("\0") if f]
 
 
 def frontmatter(path: Path) -> str:
@@ -222,11 +234,15 @@ class TestGlossary(unittest.TestCase):
         return (ROOT / "docs/GLOSSARY.md").read_text()
 
     def test_covers_every_env_var(self):
-        # Derived, not hardcoded: a new knob added anywhere fails this until
-        # it is documented.
+        # Derived, not hardcoded: a new knob added to shipped content fails this
+        # until it is documented. Scoped to tracked files so untracked notes
+        # cannot break a clean checkout.
+        files = tracked_files()
+        if files is None:
+            self.skipTest("not a git checkout; cannot determine shipped files")
         used = set()
-        for path in ROOT.rglob("*"):
-            if path.is_file() and path.suffix in (".md", ".sh", ".json"):
+        for path in files:
+            if path.suffix in (".md", ".sh", ".json") and path.is_file():
                 used |= set(re.findall(r"ENGAGEMENT_KIT_[A-Z_]+", path.read_text()))
         self.assertTrue(used, "no env vars found — the sweep itself is broken")
         for var in used:
